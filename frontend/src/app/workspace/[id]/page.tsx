@@ -43,10 +43,13 @@ export default function WorkspacePage() {
   const stompClientRef = useRef<Client | null>(null);
   const isIncomingEdit = useRef(false);
 
+  const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8085";
+  const WS_BASE_URL = process.env.NEXT_PUBLIC_WS_URL || "ws://localhost:8085";
+
   const handleFileSelect = (file: DocumentFile) => {
     setActiveFile(file);
     // Fetch latest fresh content from backend
-    fetch(`http://localhost:8085/api/documents/${file.id}`)
+    fetch(`${API_BASE_URL}/api/documents/${file.id}`)
       .then((res) => res.json())
       .then((data) => setEditorVal(data.content));
   };
@@ -59,12 +62,12 @@ export default function WorkspacePage() {
 
   // 1. Fetch structural files & metadata on load
   useEffect(() => {
-    fetch(`http://localhost:8085/api/workspaces/${workspaceId}`)
+    fetch(`${API_BASE_URL}/api/workspaces/${workspaceId}`)
       .then((res) => res.json())
       .then((data) => setWorkspace(data))
       .catch((err) => console.error("Error loading workspace:", err));
 
-    fetch(`http://localhost:8085/api/documents/workspace/${workspaceId}`)
+    fetch(`${API_BASE_URL}/api/documents/workspace/${workspaceId}`)
       .then((res) => res.json())
       .then((data: DocumentFile[]) => {
         setFiles(data);
@@ -73,20 +76,20 @@ export default function WorkspacePage() {
         }
       })
       .catch((err) => console.error("Error loading files:", err));
-  }, [workspaceId]);
+  }, [workspaceId, API_BASE_URL]);
 
   // 2. Query JDBC Analytics periodically
   useEffect(() => {
     if (!activeFile || !username) return;
     const interval = setInterval(() => {
-      fetch(`http://localhost:8085/api/documents/${activeFile.id}/analytics/${username}`)
+      fetch(`${API_BASE_URL}/api/documents/${activeFile.id}/analytics/${username}`)
         .then((res) => res.json())
         .then((data) => setJdbcAnalytics(data.totalKeystrokesLogged || 0))
         .catch(() => {});
     }, 3000);
 
     return () => clearInterval(interval);
-  }, [activeFile, username]);
+  }, [activeFile, username, API_BASE_URL]);
 
   // 3. Connect to WebSocket
   useEffect(() => {
@@ -96,9 +99,12 @@ export default function WorkspacePage() {
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     const SockJS = require("sockjs-client");
 
+    // Format WS-fallback HTTP url (e.g. wss://host/ws-editor becomes https://host/ws-editor)
+    const httpWSFallbackUrl = API_BASE_URL.replace(/^http/, "http") + "/ws-editor";
+
     const client = new Client({
-      brokerURL: "ws://localhost:8085/ws-editor", // Backup URL
-      webSocketFactory: () => new SockJS("http://localhost:8085/ws-editor"),
+      brokerURL: `${WS_BASE_URL}/ws-editor`,
+      webSocketFactory: () => new SockJS(httpWSFallbackUrl),
       debug: (str) => console.log("STOMP: ", str),
       reconnectDelay: 5000,
       heartbeatIncoming: 4000,
@@ -162,7 +168,7 @@ export default function WorkspacePage() {
   // 5. Trigger persistent JPA save
   const handleJPASave = () => {
     if (!activeFile) return;
-    fetch(`http://localhost:8085/api/documents/${activeFile.id}/save`, {
+    fetch(`${API_BASE_URL}/api/documents/${activeFile.id}/save`, {
       method: "POST",
     })
       .then((res) => res.json())
@@ -177,7 +183,7 @@ export default function WorkspacePage() {
     setExecError("");
     setShowTerminal(true);
 
-    fetch("http://localhost:8085/api/execute", {
+    fetch(`${API_BASE_URL}/api/execute`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({

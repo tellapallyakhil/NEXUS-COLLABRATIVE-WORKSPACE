@@ -17,18 +17,20 @@ export default function Home() {
   const [newWorkspaceDesc, setNewWorkspaceDesc] = useState("");
   const [showModal, setShowModal] = useState(false);
 
+  const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8085";
+
   useEffect(() => {
-    fetch("http://localhost:8085/api/workspaces")
+    fetch(`${API_BASE_URL}/api/workspaces`)
       .then((res) => res.json())
       .then((data) => setWorkspaces(data))
       .catch((err) => console.error("Error loading workspaces:", err));
-  }, []);
+  }, [API_BASE_URL]);
 
   const handleCreateWorkspace = (e: React.FormEvent) => {
     e.preventDefault();
     if (!newWorkspaceName.trim()) return;
 
-    fetch("http://localhost:8085/api/workspaces", {
+    fetch(`${API_BASE_URL}/api/workspaces`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ name: newWorkspaceName, description: newWorkspaceDesc }),
