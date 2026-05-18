@@ -31,3 +31,4 @@ Thumbs.db
 
 # Credentials & environment configurations
 backend/src/main/resources/application-supabase.properties
+.env
