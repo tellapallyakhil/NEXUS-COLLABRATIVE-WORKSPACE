@@ -1,0 +1,30 @@
+# Next.js build and cache
+frontend/.next/
+frontend/node_modules/
+frontend/out/
+frontend/build/
+frontend/.env*.local
+
+# Gradle build and cache
+backend/.gradle/
+backend/build/
+backend/out/
+backend/bin/
+.gradle/
+build/
+
+# IDE files
+.idea/
+*.iml
+.vscode/
+*.sublime-project
+*.sublime-workspace
+
+# Operating System files
+.DS_Store
+Thumbs.db
+
+# Database files
+*.db
+*.mv.db
+*.trace.db
