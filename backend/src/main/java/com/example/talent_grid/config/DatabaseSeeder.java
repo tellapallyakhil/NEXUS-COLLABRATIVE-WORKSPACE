@@ -10,7 +10,10 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 
-// Seeding is now handled directly inside Supabase SQL editor to prevent redundancy
+import org.springframework.context.annotation.Profile;
+
+@Component
+@Profile("dev")
 public class DatabaseSeeder implements CommandLineRunner {
 
     @Autowired
