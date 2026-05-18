@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import Link from "next/link";
 import { 
   Code, Database, Zap, GitBranch, Shield, Layers, 
   ArrowRight, Terminal, Cpu, Globe, Users 
@@ -204,12 +205,12 @@ export default function AboutPage() {
           Open two browser tabs side-by-side and start typing. Watch your changes sync instantly 
           across sessions through the STOMP WebSocket broker.
         </p>
-        <a
+        <Link
           href="/"
           className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-cyan-500 to-sky-500 hover:from-cyan-400 hover:to-sky-400 text-slate-950 font-bold rounded-xl transition-all hover:scale-[1.02] shadow-lg shadow-cyan-500/25"
         >
           Open Dashboard <ArrowRight size={18} />
-        </a>
+        </Link>
       </section>
     </main>
   );

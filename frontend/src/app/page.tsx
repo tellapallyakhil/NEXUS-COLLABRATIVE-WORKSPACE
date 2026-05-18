@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { Terminal, Code, Users, PlusCircle, ArrowRight } from "lucide-react";
+import Link from "next/link";
+import { Terminal, Code, PlusCircle, ArrowRight } from "lucide-react";
 
 interface Workspace {
   id: number;
@@ -100,12 +101,12 @@ export default function Home() {
                 <span className="text-[10px] text-slate-500 font-mono">
                   {new Date(ws.createdAt).toLocaleDateString()}
                 </span>
-                <a
+                <Link
                   href={`/workspace/${ws.id}`}
                   className="flex items-center gap-1 text-xs font-semibold text-cyan-400 hover:text-cyan-300 transition-colors cursor-pointer"
                 >
                   Join Room <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
-                </a>
+                </Link>
               </div>
             </div>
           ))}

@@ -43,8 +43,17 @@ export default function WorkspacePage() {
   const stompClientRef = useRef<Client | null>(null);
   const isIncomingEdit = useRef(false);
 
+  const handleFileSelect = (file: DocumentFile) => {
+    setActiveFile(file);
+    // Fetch latest fresh content from backend
+    fetch(`http://localhost:8085/api/documents/${file.id}`)
+      .then((res) => res.json())
+      .then((data) => setEditorVal(data.content));
+  };
+
   // Initialize random username client-side only to prevent SSR hydration mismatch
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setUsername(`Engineer_${Math.floor(Math.random() * 900 + 100)}`);
   }, []);
 
@@ -84,6 +93,7 @@ export default function WorkspacePage() {
     if (!activeFile || !username) return;
 
     // Dynamically load SockJS to ensure robust SSR builds
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
     const SockJS = require("sockjs-client");
 
     const client = new Client({
@@ -122,13 +132,6 @@ export default function WorkspacePage() {
     };
   }, [activeFile, username]);
 
-  const handleFileSelect = (file: DocumentFile) => {
-    setActiveFile(file);
-    // Fetch latest fresh content from backend
-    fetch(`http://localhost:8085/api/documents/${file.id}`)
-      .then((res) => res.json())
-      .then((data) => setEditorVal(data.content));
-  };
 
   // 4. Send typing delta updates to WebSocket
   const handleEditorChange = (value: string | undefined) => {
